@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+		<!-- add tailwin -->
+		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+		<script src="plugin/highlight/highlight.js"></script>
+
+		<title>Type-Safe Kotlin DSL for Alchemist</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/white.css">
+		<style>
+			.body, .reveal, .reveal section {
+				font-family: "Inter", sans-serif!important;
+				font-optical-sizing: auto;
+				font-weight: 300;
+				font-style: normal;
+				scrollbar-width: none;
+				-ms-overflow-style: none !important;
+				&::-webkit-scrollbar {
+					display: none !important;
+				}
+			}
+			h2, h3, h4, h5, h6 {
+				font-family: "Inter", sans-serif!important;
+				font-optical-sizing: auto;
+				font-weight: 500;
+				font-style: bold;
+			}
+			.full-bleed {
+				padding-left: 0!important;
+				padding-right: 0!important;
+				margin-left: 0!important;
+				margin-right: 0!important;
+				width: 100%!important;
+				max-width: 100%!important;
+			}
+			.left {
+				font-size: 1.85rem;
+				line-height: 1.5;
+			}
+			.medium{
+				font-size: 1.90rem;
+				line-height: 1.5;
+			}
+
+		</style>
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/monokai.css">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h3>Type-Safe Complex Specifications in Kotlin: a DSL to Configure the Alchemist Simulator</h3>
+					<div class="flex flex-row justify-between">
+						<p>Advisor: Gianluca Aguzzi</p>
+						<p>Co-advisor: Danilo Pianini</p>
+					</div>
+				</section>
+				<section>
+					<h3>Goals</h3>
+					<ul>
+						<li>Develop a <span class="font-bold text-red-600">type-safe Kotlin DSL</span> to configure simulations in Alchemist.</li>
+						<li>Provide better configuration handling than YAML.</li>
+					</ul>
+				</section>
+				<section>
+					<h3>Background - DSL</h3>
+					<ul>
+						<li>
+							A programming language specialized for a specific domain.
+						</li>
+						<li>More focused feature set than a <br>General-Purpose Language (GPL).
+						</li>
+						<li>
+							Focus on <span class="font-bold text-red-600">what</span> to do, not on <span class="font-bold text-red-600">how</span> to do it.
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h3>Background - Alchemist</h3>
+					<div class="left flex flex-row gap-4 justify-between items-center">
+						<div class="w-1/2">
+							<ul>
+								<li>
+									Simulator for pervasive, aggregate, and nature-inspired computing.
+								</li>
+								<li>
+									Extensible via <span class="font-bold text-red-600">incarnations</span> for different domains.
+								</li>
+								<li>
+									Simulations configured through YAML files.
+								</li>
+							</ul>
+						</div>
+						<div class="w-3/4">
+							<img src="meta.svg" alt="Alchemist metamodel" class="w-full object-contain ml-auto">
+						</div>
+					</div>
+				</section>
+				<section>
+					<h3>Motivation</h3>
+					<ul>
+						<li>YAML is not <span class="font-bold text-red-600">type-safe</span>.</li>
+						<li>Limited support for reuse and modularity.</li>
+						<li>A type-safe DSL better handles complex configurations.</li>
+					</ul>
+				</section>
+				<section>
+					<h3>Requirements</h3>
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+						<div>
+							<h5>Functional</h4>
+							<ul class="medium">
+								<li>Equivalence between YAML and DSL configurations.</li>
+								<li>Integration with the Alchemist loading system.</li>
+								<li>Type safety.</li>
+							</ul>
+						</div>
+						<div>
+							<h5>Non-functional</h4>
+							<ul class="medium">
+								<li>DSL API usability.</li>
+								<li>Extensibility.</li>
+								<li>Performance.</li>
+							</ul>
+						</div>
+					</div>
+				</section>
+				<section>
+					<section>
+						<h3>Kotlin DSL</h3>
+						<ul>
+							<li>Type-safe DSL using Kotlin as a host language.</li>
+							<li>Direct instantiation of Alchemist objects.</li>
+							<li>Same YAML configuration semantics.</li>
+							<li>Supports batch execution and variable management.</li>
+							<li>Supports modularity and code reuse.</li>
+							<li>Allows the definition of custom DSL syntax for specific domains.</li>
+						</ul>
+					</section>
+					<section>
+						<h3>Kotlin DSL — Example</h3>
+						<pre><code class="text-sm" data-trim data-noescape data-line-numbers="1-29|3-8|10-23">
+							val incarnation = SAPERE.incarnation&lt;Any, Euclidean2DPosition&gt;()
+							simulation(incarnation) {
+								val rate by variable(GeometricVariable(2.0, 0.1, 10.0, 9))
+								val size by variable(LinearVariable(5.0, 1.0, 10.0, 1.0))
+							
+								val mSize by variable { -size }
+								val sourceStart by variable { mSize / 10.0 }
+								val sourceSize by variable { size / 5.0 }
+							
+								networkModel = ConnectWithinDistance(0.5)
+								deployments {
+									deploy(createDeployment(mSize, mSize, size, size)) {
+										inside(RectangleFilter(sourceStart, sourceStart, sourceSize, sourceSize)) {
+											molecule = "token, 0, []"
+										}
+										programs {
+											all {
+												timeDistribution(rate.toString())
+												program = "{token, N, L}"
+											}
+										}
+									}
+								}
+							}
+						</code></pre>
+					</section>
+					<section>
+						<h3>Kotlin DSL — Example</h3>
+						<div class="flex flex-row gap-2">
+							<pre><code class="text-sm language-kotlin" data-trim data-noescape data-line-numbers="4-10">
+								simulation(incarnation) {
+									networkModel = ConnectWithinDistance(1000.0)
+									deployments {
+										lagoon(500) {
+											programs {
+												all {
+													timeDistribution("10")
+													reaction = event()
+												}
+											}
+										}
+									}
+								}
+							</code></pre>
+							<pre><code class="text-sm language-kotlin" data-trim data-noescape data-line-numbers="2-10">
+								simulation(incarnation, { env }) {
+									deployments {
+										for (i in 1..10) {
+											for (j in 1..10) {
+												if (i == j) continue
+												deploy(point(i, j)){
+													// ...
+												}
+											}
+										}
+									}
+								}
+							</code></pre>
+						</div>	
+					</section>
+				</section>
+				<section>
+					<h3>Kotlin Symbol Processing (KSP)</h3>
+					<div class="flex flex-col items-center gap-6">
+						<ul class="text-center space-y-2">
+							<li>Generates <span class="font-bold text-red-600">helper functions</span> for the DSL.</li>
+							<li>Enables the DSL to be extensible without touching the core.</li>
+							<li>Improves the DSL's user experience.</li>
+						</ul>
+						<pre><code class="text-sm language-kotlin" data-trim data-noescape data-line-numbers="1-5">
+deployments {
+    // 'environment' is injected automatically from the context
+    deploy(point(0.0, 0.0))
+    // instead of Point(ctx.environment, 0.0, 0.0)
+}
+						</code></pre>
+					</div>
+				</section>
+				<section>
+					<h3>Validation</h3>
+					<ul>
+						<li>Unit tests for correctness.</li>
+						<li>YAML vs DSL equivalence: static and runtime comparison.</li>
+						<li>Performance testing.</li>
+					</ul>
+				</section>
+				<section class="full-bleed">					
+					<h3>Comparison</h3>
+					<div class="flex flex-row justify-between">
+						<div class="w-full">
+							<h5>YAML</h5>
+							<pre><code class="text-sm" data-trim data-noescape>
+							incarnation: sapere
+
+							network-model:
+							type: ConnectWithinDistance
+							parameters: [0.5]
+							
+							deployments:
+								type: Grid
+								parameters: [-5, -5, 5, 5]
+								contents:
+								in:
+									type: Rectangle
+									parameters: [-0.5, -0.5, 1, 1]
+								molecule: token
+								programs:
+								- time-distribution: 1
+									program: >
+									{token} --> {firing}
+								- program: "{firing} --> +{token}"
+							</code></pre>
+						</div>
+						<div class="w-full">
+							<h5>Kotlin DSL</h5>
+							<pre><code class="text-sm" data-trim data-noescape>
+								simulation(incarnation) {
+									networkModel = ConnectWithinDistance(0.5)
+									deployments {
+										val token = "token"
+										deploy(grid(-5.0, -5.0, 5.0, 5.0)){
+											inside(Rectangle(-0.5, -0.5, 1.0, 1.0)){
+												molecule = token
+											}
+											programs {
+												all {
+													timeDistribution("1")
+													program = "{token} --> {firing}"
+												}
+												all {
+													program = "{firing} --> +{token}"
+												}
+											}
+										}
+									}
+								}
+							</code>
+						</div>
+					</div>
+				</section>
+				<section>
+					<h3>Conclusions and Future Work</h3>
+					<ul>
+						<li>A type-safe DSL can now be used instead of YAML in Alchemist.</li>
+						<li>Extensible via KSP without touching the core.</li>
+						<li>Future work: YAML-to-DSL converter, DSL for incarnation-specific programs.</li>
+					</ul>
+				</section>
+				<section>
+					<h3>Thank you for your attention!</h3>
+					<!-- My name and the date -->
+					<p>Marco Frattarola</p>
+				</section>
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
