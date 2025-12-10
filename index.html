@@ -253,12 +253,18 @@
 								<li>Enables the DSL to be extensible without touching the core.</li>
 								<li>Improves the DSL's user experience.</li>
 							</ul>
-							<pre><code class="text-sm language-kotlin rounded-xl" data-trim data-noescape data-line-numbers="1-5">
-	deployments {
-		// 'environment' is injected automatically from the context
-		deploy(point(0.0, 0.0))
-		// instead of Point(ctx.environment, 0.0, 0.0)
-	}
+							<pre><code class="text-sm language-kotlin rounded-xl" data-trim data-noescape>
+								@AlchemistKotlinDSL
+								public final class Point&lt;	P extends Position&lt;? extends P&gt;&gt; implements Deployment&lt;P&gt; {
+									// ...
+								}
+							</code></pre>
+							<pre><code class="text-sm language-kotlin rounded-xl" data-trim data-noescape>
+							deployments {
+								// 'environment' is injected automatically from the context
+								deploy(point(0.0, 0.0))
+								// instead of Point(ctx.environment, 0.0, 0.0)
+							}
 							</code></pre>
 						</div>
 					</section>
