@@ -87,6 +87,7 @@
 					</ul>
 				</section>
 				<section>
+				<section>
 					<h3>Background:<br>Alchemist</h3>
 					<div class="left flex flex-row gap-4 justify-between items-center">
 						<div class="w-1/2">
@@ -103,9 +104,43 @@
 							</ul>
 						</div>
 						<div class="w-3/4">
-							<img src="meta.svg" alt="Alchemist metamodel" class="w-full object-contain ml-auto">
+							<!-- two rows of images  2x2-->
+							<div class="grid grid-cols-2 gap-0">
+								<img src="cutting27.png" class="">
+								<img src="snapshot2.png" class="">
+								<img src="peer-to-peer-4.png" class="">
+								<img src="mira1-1.png" class="">
+							</div>
 						</div>
 					</div>
+				</section>
+				<section>
+					<h3>Meta-Model</h3>
+					<div class="flex flex-row justify-center gap-2">
+						<img src="meta.svg" alt="Alchemist metamodel" class="align-center w-3/4">
+						<pre><code class="text-sm rounded-xl" data-trim data-noescape>
+						incarnation: sapere
+
+						network-model:
+						type: ConnectWithinDistance
+						parameters: [0.5]
+						
+						deployments:
+							type: Grid
+							parameters: [-5, -5, 5, 5, 0.25, 0.25, 0.1, 0.1]
+							contents:
+							in:
+								type: Rectangle
+								parameters: [-0.5, -0.5, 1, 1]
+							molecule: token
+							programs:
+							- time-distribution: 1
+								program: >
+								{token} --> {firing}
+							- program: "{firing} --> +{token}"
+						</code>
+					</div>
+				</section>
 				</section>
 				<section>
 					<section>
@@ -120,7 +155,7 @@
 						<h3>Example - YAML</h3>
 						<div class="flex flex-row gap-2">
 							<pre>
-								<code class="text-sm" data-trim data-noescape data-line-numbers="4-23">
+								<code class="text-sm rounded-xl" data-trim data-noescape data-line-numbers="4-23">
 									incarnation: sapere
 									environment: { type: OSMEnvironment }
 									network-model: { type: ConnectWithinDistance, parameters: [1000] }
@@ -156,7 +191,7 @@
 						<h3>Example - YAML</h3>
 						<div class="flex flex-row gap-2">
 							<pre>
-								<code class="text-sm" data-trim data-noescape>
+								<code class="text-sm rounded-xl" data-trim data-noescape>
 									incarnation: sapere
 									environment:
 										type: Continuous2DEnvironment
@@ -165,7 +200,7 @@
 								</code>
 							</pre>
 							<pre>
-								<code class="text-sm" data-trim data-noescape>
+								<code class="text-sm rounded-xl" data-trim data-noescape>
 									incarnation: sapere
 									environment:
 										type: Continuous2DEnvironment
@@ -211,8 +246,25 @@
 						</ul>
 					</section>
 					<section>
+						<h3>Kotlin Symbol Processing (KSP)</h3>
+						<div class="flex flex-col items-center gap-6">
+							<ul class="text-center space-y-2">
+								<li>Generates <span class="font-bold text-red-600">helper functions</span> for the DSL.</li>
+								<li>Enables the DSL to be extensible without touching the core.</li>
+								<li>Improves the DSL's user experience.</li>
+							</ul>
+							<pre><code class="text-sm language-kotlin rounded-xl" data-trim data-noescape data-line-numbers="1-5">
+	deployments {
+		// 'environment' is injected automatically from the context
+		deploy(point(0.0, 0.0))
+		// instead of Point(ctx.environment, 0.0, 0.0)
+	}
+							</code></pre>
+						</div>
+					</section>
+					<section>
 						<h3>Kotlin DSL — Example</h3>
-						<pre><code class="text-sm" data-trim data-noescape data-line-numbers="1-29|3-8|10-23">
+						<pre><code class="text-sm rounded-xl" data-trim data-noescape data-line-numbers="1-29|3-8|10-23">
 							val incarnation = SAPERE.incarnation&lt;Any, Euclidean2DPosition&gt;()
 							simulation(incarnation) {
 								val rate by variable(GeometricVariable(2.0, 0.1, 10.0, 9))
@@ -242,7 +294,7 @@
 					<section>
 						<h3>Kotlin DSL — Example</h3>
 						<div class="flex flex-row gap-2">
-							<pre><code class="text-sm language-kotlin" data-trim data-noescape data-line-numbers="4-10">
+							<pre><code class="text-sm language-kotlin rounded-xl" data-trim data-noescape data-line-numbers="4-10">
 								simulation(incarnation) {
 									networkModel = ConnectWithinDistance(1000.0)
 									deployments {
@@ -257,7 +309,7 @@
 									}
 								}
 							</code></pre>
-							<pre><code class="text-sm language-kotlin" data-trim data-noescape data-line-numbers="2-10">
+							<pre><code class="text-sm language-kotlin rounded-xl" data-trim data-noescape data-line-numbers="2-10">
 								simulation(incarnation, { env }) {
 									deployments {
 										for (i in 1..10) {
@@ -275,22 +327,6 @@
 					</section>
 				</section>
 				<section>
-					<h3>Kotlin Symbol Processing (KSP)</h3>
-					<div class="flex flex-col items-center gap-6">
-						<ul class="text-center space-y-2">
-							<li>Generates <span class="font-bold text-red-600">helper functions</span> for the DSL.</li>
-							<li>Enables the DSL to be extensible without touching the core.</li>
-							<li>Improves the DSL's user experience.</li>
-						</ul>
-						<pre><code class="text-sm language-kotlin" data-trim data-noescape data-line-numbers="1-5">
-deployments {
-    // 'environment' is injected automatically from the context
-    deploy(point(0.0, 0.0))
-    // instead of Point(ctx.environment, 0.0, 0.0)
-}
-						</code></pre>
-					</div>
-				</section>
 				<section>
 					<h3>Validation</h3>
 					<ul>
@@ -299,12 +335,24 @@ deployments {
 						<li>Performance testing.</li>
 					</ul>
 				</section>
+				<section data-markdown>
+					<textarea data-template class="text-sm">
+### Performance Comparison
+
+| Phase | YAML (ms) | DSL (ms) |
+| --- | --- | --- |
+| Loading Phase | 11,002 | 15,802 |
+| Materialization Phase | 4,422 | 2,734 |
+| Total Average | **15,424** | **18,536** |
+					</textarea>
+				</section>
+			</section>
 				<section class="full-bleed">					
 					<h3>Comparison</h3>
 					<div class="flex flex-row justify-between">
 						<div class="w-full">
 							<h5>YAML</h5>
-							<pre><code class="text-sm" data-trim data-noescape>
+							<pre><code class="text-sm rounded-xl" data-trim data-noescape>
 							incarnation: sapere
 
 							network-model:
@@ -328,27 +376,28 @@ deployments {
 						</div>
 						<div class="w-full">
 							<h5>Kotlin DSL</h5>
-							<pre><code class="text-sm" data-trim data-noescape>
-								simulation(incarnation) {
-									networkModel = ConnectWithinDistance(0.5)
-									deployments {
-										val token = "token"
-										deploy(grid(-5.0, -5.0, 5.0, 5.0)){
-											inside(Rectangle(-0.5, -0.5, 1.0, 1.0)){
-												molecule = token
+							<pre><code class="text-sm rounded-xl" data-trim data-noescape>
+							val incarnation = SAPERE.incarnation<Any, Euclidean2DPosition>()
+							simulation(incarnation) {
+								networkModel = ConnectWithinDistance(0.5)
+								deployments {
+									val token = "token"
+									deploy(grid(-5.0, -5.0, 5.0, 5.0)){
+										inside(Rectangle(-0.5, -0.5, 1.0, 1.0)){
+											molecule = token
+										}
+										programs {
+											all {
+												timeDistribution("1")
+												program = "{token} --> {firing}"
 											}
-											programs {
-												all {
-													timeDistribution("1")
-													program = "{token} --> {firing}"
-												}
-												all {
-													program = "{firing} --> +{token}"
-												}
+											all {
+												program = "{firing} --> +{token}"
 											}
 										}
 									}
 								}
+							}
 							</code>
 						</div>
 					</div>
